@@ -5,13 +5,15 @@
   <div class="min-w-0 flex-1 space-y-4">
     <z-card-header><z-card-title class="text-xl font-semibold text-blue-900 dark:text-blue-300" zTitle="Zone de notifications" /></z-card-header>
     <z-card-content class="space-y-3">
-      <p>Vous avez {{ notifications.length }} nouvelles notifications.</p>
+      <p>Vous avez {{ notifications().length }} nouvelles notifications.</p>
       <button z-button zType="outline" (click)="visible.set(!visible())">
         {{ visible() ? 'Masquer' : 'Afficher' }} les notifications
       </button>
       @if (visible()) {
         <ul class="list-disc ps-6">
-          @for (n of notifications; track n) { <li>{{ n }}</li> }
+          @for (n of notifications(); track n.id) {
+            <li>{{ n.message }} <span class="text-muted-foreground">· {{ n.at | date: 'HH:mm' }}</span></li>
+          }
         </ul>
       }
     </z-card-content>

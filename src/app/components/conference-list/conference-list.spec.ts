@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ConferenceList } from './conference-list';
+import { NotificationService } from '@/services/notifications';
 
 describe('ConferenceList', () => {
   it('filters by title, registers, and colors buttons by remaining places', async () => {
@@ -20,6 +21,9 @@ describe('ConferenceList', () => {
     buttons()[2].click(); // full: stays at 0
     await fixture.whenStable();
     expect(el.textContent).not.toContain('Places restantes : -1');
+
+    const messages = TestBed.inject(NotificationService).items().map(n => n.message);
+    expect(messages.filter(m => m.startsWith('Inscription'))).toEqual(['Inscription confirmée : Angular 21 Conference']);
 
     (fixture.componentInstance as any).search.set('sign');
     await fixture.whenStable();

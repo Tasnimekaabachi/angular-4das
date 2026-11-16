@@ -1,10 +1,11 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardButtonComponent } from '@/shared/components/button';
 import { ZardInputComponent } from '@/shared/components/input';
 import { Conference } from '@/models/conference';
+import { NotificationService } from '@/services/notifications';
 
 @Component({
   selector: 'app-conference-list',
@@ -35,9 +36,12 @@ export class ConferenceList {
     return r < 10 ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-green-600 text-white hover:bg-green-700';
   }
 
+  private readonly notifications = inject(NotificationService);
+
   protected register(id: number): void {
-    this.conferences.update(list =>
-      list.map(c => (c.id === id && this.remaining(c) > 0 ? { ...c, nbParticipants: c.nbParticipants + 1 } : c)),
-    );
+    const conf = this.conferences().find(c => c.id === id);
+    if (!conf || this.remaining(conf) === 0) return;
+    this.conferences.update(list => list.map(c => (c.id === id ? { ...c, nbParticipants: c.nbParticipants + 1 } : c)));
+    this.notifications.add(`Inscription confirmée : ${conf.title}`);
   }
 }
